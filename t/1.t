@@ -2,23 +2,21 @@
 use Test;
 use Errno;
 
-BEGIN { plan tests => 7 };
+BEGIN { plan tests => 5 }
 
 #
 # load
 #
 
-ok eval{ require Error::Wait };
-
-ok tied $?;
-ok ref tied $?, "Error::Wait";
+require Error::Wait;
+ok ref tied($?), "Error::Wait";
 
 #
 # catch exit status
 #
 
 system $^X, '-e', 'exit 1';
-ok "$?", qr/Exited: 1/;
+ok "$?", "Exited: 1";
 
 #
 # use $! when $? == -1

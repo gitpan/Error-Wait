@@ -8,7 +8,7 @@
 package Error::Wait;
 
 use 5.006;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 use strict;
 use warnings;
 
@@ -56,10 +56,10 @@ BEGIN {
 eval { WIFEXITED(0) };
 if ($@) {
     no warnings 'redefine';
-    *WIFEXITED   = sub { 0 == ($_ & 0xff) };
+    *WIFEXITED   = sub { 0 == ($_[0] & 0xff) };
     *WEXITSTATUS = sub { $_[0] >> 8 };
-    *WIFSIGNALED = sub { $_ & 0xff };
-    *WTERMSIG    = sub { $_ & 0xff };
+    *WIFSIGNALED = sub { $_[0] & 0xff };
+    *WTERMSIG    = sub { $_[0] & 0xff };
 }
 
 #
@@ -87,7 +87,7 @@ Error::Wait - User-friendly version of C<$?>
 
 Error::Wait overloads the stringification of C<$?> to provide sensible
 error messages.  Numeric and boolean operations continue to work as usual,
-so code using C<<< $? >> 8 >>> on't break.
+so code using C<<< $? >> 8 >>> won't break.
 
 =head1 SEE ALSO
 

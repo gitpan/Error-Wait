@@ -1,4 +1,4 @@
-Error::Wait version 0.03
+Error::Wait version 0.04
 ========================
 
 Error::Wait makes $? (the wait() status variable) as user-friendly as $!.

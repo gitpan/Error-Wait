@@ -1,5 +1,8 @@
 Revision history for Perl extension Error::Wait.
 
+0.05  Tue Dec 23 11:33:13 2003
+	- tidy up, new test
+
 0.04  Wed Nov 26 22:45:03 2003
 	- fix Windows-only typo
 

@@ -2,52 +2,50 @@
 # Error/Wait.pm
 #
 # $Author: grazz $
-# $Date: 2003/11/16 07:53:34 $
+# $Date: 2003/12/23 16:32:42 $
 #
 
 package Error::Wait;
 
 use 5.006;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
+
 use strict;
 use warnings;
-
-
-use Tie::Scalar;
-use base qw(Tie::StdScalar);
-
-our $ERR;	# alias to original $?
-sub FETCH { return $_[0] }
-sub STORE { $ERR = $_[1] }
-
 
 use POSIX;
 use Config;
 
-use overload
-    '""' => \&stringify,
-    '0+' => sub { $ERR },
-    bool => sub { $ERR },
-    fallback => 1;
+our $ERR;  # alias to original $?
 
-BEGIN {
-    my @names = split ' ', $Config{sig_name};
-    sub stringify {
-	return $! if $ERR < 0;
-	if (WIFEXITED($ERR)) {
-	    my $status = WEXITSTATUS($ERR);
-	    return "Exited: $status";
-	}
-	if (WIFSIGNALED($ERR)) { 
-	    my $sig = WTERMSIG($ERR);
-	    return "Killed: $names[$sig]";
-	}
-	if (WIFSTOPPED($ERR)) { 
-	    my $sig = WSTOPSIG($ERR);
-	    return "Stopped: $names[$sig]";
-	}
-	return $ERR;
+sub TIESCALAR { bless [], shift }
+sub FETCH     { return $_[0] }
+sub STORE     { $ERR = $_[1] }
+
+use overload '""' => \&stringify,
+             '0+' => sub { $ERR },
+             bool => sub { $ERR },
+             fallback => 1;
+
+my @names = split ' ', $Config{sig_name};
+
+sub stringify {
+    return $! if $ERR < 0;
+
+    if (WIFEXITED($ERR)) {
+	my $status = WEXITSTATUS($ERR);
+	return "Exited: $status";
     }
+    if (WIFSIGNALED($ERR)) { 
+	my $sig = WTERMSIG($ERR);
+	return "Killed: $names[$sig]";
+    }
+    if (WIFSTOPPED($ERR)) { 
+	my $sig = WSTOPSIG($ERR);
+	return "Stopped: $names[$sig]";
+    }
+
+    return $ERR;  # shouldn't get here
 }
 
 #
@@ -79,6 +77,7 @@ Error::Wait - User-friendly version of C<$?>
 =head1 SYNOPSIS
 
   use Error::Wait;
+
   system('/no/such/file') == 0 or die $?;   # "No such file or directory"
   system('/bin/false')    == 0 or die $?;   # "Exited: 1"
   system('kill -HUP $$')  == 0 or die $?;   # "Killed: HUP"
@@ -91,11 +90,11 @@ so code using C<<< $? >> 8 >>> won't break.
 
 =head1 SEE ALSO
 
-L<perlvar/$?>, L<perlfunc/system>, L<POSIX/WAIT>
+L<perlvar/$?>, L<perlfunc/system>, L<perlport/system>
 
 =head1 KNOWN ISSUES
 
-C<$?> and the C<wait.h> macros aren't really portable.
+C<$?> and the C<wait.h> macros aren't very portable.
 
 =head1 BUGS
 

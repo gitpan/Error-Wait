@@ -1,6 +1,9 @@
-Revision history for Perl extension Wait.
+Revision history for Perl extension Error::Wait.
 
-0.02  Tue Jul  1 20:17:20 2003
+0.03  Sun Nov 16 02:20:12 2003
+	- clean-up again; fix Changes and README
+
+0.02  Fri Nov 14 21:19:37 2003
 	- clean-up; test for POSIX W* macros
 
 0.01  Tue Jul  1 20:17:20 2003
